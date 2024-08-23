@@ -21,7 +21,7 @@ export default async function decorate(block) {
     
     const cardImage = document.createElement('img');
     cardImage.className = 'card-image';
-    cardImage.src = imageUrl || 'https://culture-tecture.adobe.com/en/publish/2024/06/18/media_193f46a1d6e96b66d3484d186062548bbe41f3908.png?width=2000&format=webply&optimize=medium'; // Set default image URL if imageUrl is not found
+    cardImage.src = imageUrl || 'https://main--aip--gargadobe.hlx.page/media_16217f65af2aa2100714b80ea9cd45d2492cdd9f7.png?width=2000&format=webply&optimize=medium'; // Set default image URL if imageUrl is not found
     cardImage.alt = title;
     
     // Create tags element
