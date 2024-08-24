@@ -87,6 +87,7 @@ function renderResult(result, searchTerms, titleTag) {
   const li = document.createElement('li');
   const a = document.createElement('a');
   a.href = result.path;
+  result.image = result.image || 'https://main--aip--gargadobe.hlx.page/media_16217f65af2aa2100714b80ea9cd45d2492cdd9f7.png?width=2000&format=webply&optimize=medium';
   if (result.image) {
     const wrapper = document.createElement('div');
     wrapper.className = 'search-result-image';
@@ -94,6 +95,7 @@ function renderResult(result, searchTerms, titleTag) {
     wrapper.append(pic);
     a.append(wrapper);
   }
+  result.title = result.name;
   if (result.title) {
     const title = document.createElement(titleTag);
     title.className = 'search-result-title';
@@ -107,9 +109,35 @@ function renderResult(result, searchTerms, titleTag) {
   if (result.description) {
     const description = document.createElement('p');
     description.textContent = result.description;
+    description.classList.add('truncate');
     highlightTextElements(searchTerms, [description]);
     a.append(description);
   }
+
+  if (result.tags) {
+    const tags = document.createElement('div');
+    tags.className = 'search-result-tags';
+    result.tags = result.tags.split(',');
+    result.tags.forEach((tag) => {
+      const tagElement = document.createElement('span');
+      tagElement.className = 'tag';
+      tagElement.textContent = tag;
+      tagElement.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent the card click event
+        event.preventDefault(); // Prevent the default anchor behavior
+        searchParams.set('tag', tag);
+        const url = new URL(window.location.href);
+        url.search = searchParams.toString();
+        window.history.replaceState({}, '', url.toString());
+        const input = document.querySelector('input');
+        input.dispatchEvent(new Event('input'));
+      });
+
+      tags.append(tagElement);
+    });
+    a.append(tags);
+  }
+
   li.append(a);
   return li;
 }
@@ -133,7 +161,6 @@ async function renderResults(block, config, filteredData, searchTerms) {
   clearSearchResults(block);
   const searchResults = block.querySelector('.search-results');
   const headingTag = searchResults.dataset.h;
-
   if (filteredData.length) {
     searchResults.classList.remove('no-results');
     filteredData.forEach((result) => {
@@ -160,7 +187,7 @@ function filterData(searchTerms, data) {
     let minIdx = -1;
 
     searchTerms.forEach((term) => {
-      const idx = (result.header || result.title).toLowerCase().indexOf(term);
+      const idx = (result.header || result.title)?.toLowerCase()?.indexOf(term);
       if (idx < 0) return;
       if (minIdx < idx) minIdx = idx;
     });
@@ -170,7 +197,7 @@ function filterData(searchTerms, data) {
       return;
     }
 
-    const metaContents = `${result.title} ${result.description} ${result.path.split('/').pop()}`.toLowerCase();
+    const metaContents = `${result.title} ${result.description} ${result?.path?.split('/')?.pop()}`?.toLowerCase();
     searchTerms.forEach((term) => {
       const idx = metaContents.indexOf(term);
       if (idx < 0) return;
@@ -188,22 +215,70 @@ function filterData(searchTerms, data) {
   ].map((item) => item.result);
 }
 
+function addTagsFilter(block, data, selectedTag) {
+  const searchFilters = block.querySelector('.search-filters');
+  searchFilters.innerHTML = '';
+  const tagsContainer = document.createElement('div');
+  tagsContainer.className = 'tags-container';
+  const tags = new Set();
+  if (data) {
+    data.forEach((result) => {
+      if (result.tags) {
+        result.tags.split(',').forEach((tag) => tags.add(tag));
+      }
+    });
+  }
+  tags.forEach((tag) => {
+    const tagElement = document.createElement('span');
+    tagElement.className = 'tag';
+    if (tag === selectedTag) {
+      tagElement.classList.add('selected');
+    }
+    tagElement.textContent = tag;
+    tagElement.addEventListener('click', (event) => {
+      event.stopPropagation(); // Prevent the card click event
+      event.preventDefault(); // Prevent the default anchor behavior
+      const selectedTag = searchParams.get('tag') === tag ? '' : tag;
+      if (!selectedTag) {
+        searchParams.delete('tag');
+      } else {
+        searchParams.set('tag', selectedTag);
+      }
+      const url = new URL(window.location.href);
+      url.search = searchParams.toString();
+      window.history.replaceState({}, '', url.toString());
+      const input = document.querySelector('input');
+      input.dispatchEvent(new Event('input'));
+    });
+    tagsContainer.append(tagElement);
+  });
+  searchFilters.append(tagsContainer);
+}
+
 async function handleSearch(e, block, config) {
   const searchValue = e.target.value;
-  searchParams.set('q', searchValue);
+  if (searchValue.length < 3) {
+    searchParams.delete('q');
+  } else {
+    searchParams.set('q', searchValue);
+  }
   if (window.history.replaceState) {
     const url = new URL(window.location.href);
     url.search = searchParams.toString();
     window.history.replaceState({}, '', url.toString());
   }
-
+  const selectedTag = searchParams.get('tag') || '';
+  const searchTerms = searchValue.toLowerCase().split(/\s+/).filter((term) => !!term);
+  let data = await fetchData(config.source);
+  addTagsFilter(block, data, selectedTag);
+  if (selectedTag) {
+    data = data.filter((result) => result.tags?.split(',').includes(selectedTag));
+  }
   if (searchValue.length < 3) {
-    clearSearch(block);
+    renderResults(block, config, data, searchTerms);
+    // clearSearch(block);
     return;
   }
-  const searchTerms = searchValue.toLowerCase().split(/\s+/).filter((term) => !!term);
-
-  const data = await fetchData(config.source);
   const filteredData = filterData(searchTerms, data);
   await renderResults(block, config, filteredData, searchTerms);
 }
@@ -214,6 +289,13 @@ function searchResultsContainer(block) {
   results.dataset.h = findNextHeading(block);
   return results;
 }
+
+function searchFilters(block) {
+  const results = document.createElement('div');
+  results.className = 'search-filters';
+  return results;
+}
+
 
 function searchInput(block, config) {
   const input = document.createElement('input');
@@ -256,14 +338,13 @@ export default async function decorate(block) {
   block.innerHTML = '';
   block.append(
     searchBox(block, { source, placeholders }),
+    searchFilters(block),
     searchResultsContainer(block),
   );
 
-  if (searchParams.get('q')) {
-    const input = block.querySelector('input');
-    input.value = searchParams.get('q');
-    input.dispatchEvent(new Event('input'));
-  }
+  const input = block.querySelector('input');
+  input.value = searchParams.get('q');
+  input.dispatchEvent(new Event('input'));
 
   decorateIcons(block);
 }
