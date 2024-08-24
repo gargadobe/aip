@@ -85,8 +85,18 @@ export async function fetchData(source) {
 
 function renderResult(result, searchTerms, titleTag) {
   const li = document.createElement('li');
-  const a = document.createElement('a');
-  a.href = result.path;
+  const a = document.createElement('div');
+  // a.href = result.path;
+  a.addEventListener('click', async (e) => {
+    e.preventDefault();
+    searchParams.set('product', result.name);
+    const url = new URL(window.location.href);
+    url.search = searchParams.toString();
+    window.history.replaceState({}, '', url.toString());
+    const { openModal } = await import(`${window.hlx.codeBasePath}/blocks/modal/modal.js`);
+    openModal("/product-details");
+  });
+
   result.image = result.image || 'https://main--aip--gargadobe.hlx.page/media_16217f65af2aa2100714b80ea9cd45d2492cdd9f7.png?width=2000&format=webply&optimize=medium';
   if (result.image) {
     const wrapper = document.createElement('div');
