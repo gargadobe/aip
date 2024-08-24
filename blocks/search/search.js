@@ -83,6 +83,19 @@ export async function fetchData(source) {
   return json.data;
 }
 
+ async function openProductModal() {
+  const { openModal } = await import(`${window.hlx.codeBasePath}/blocks/modal/modal.js`);
+  await openModal("/product-details");
+  let dialogElement = document.querySelector('dialog');
+  dialogElement.addEventListener('close', () => {
+    searchParams.delete('product');
+    const url = new URL(window.location.href);
+    url.search = searchParams.toString();
+    window.history.replaceState({}, '', url.toString());
+  });
+}
+
+
 function renderResult(result, searchTerms, titleTag) {
   const li = document.createElement('li');
   const a = document.createElement('div');
@@ -93,16 +106,7 @@ function renderResult(result, searchTerms, titleTag) {
     const url = new URL(window.location.href);
     url.search = searchParams.toString();
     window.history.replaceState({}, '', url.toString());
-    const { openModal } = await import(`${window.hlx.codeBasePath}/blocks/modal/modal.js`);
-    await openModal("/product-details");
-    let dialogElement = document.querySelector('dialog');
-    dialogElement.addEventListener('close', () => {
-      searchParams.delete('product');
-      const url = new URL(window.location.href);
-      url.search = searchParams.toString();
-      window.history.replaceState({}, '', url.toString());
-    });
-
+    await openProductModal();
   });
 
   result.image = result.image || 'https://main--aip--gargadobe.hlx.page/media_16217f65af2aa2100714b80ea9cd45d2492cdd9f7.png?width=2000&format=webply&optimize=medium';
@@ -291,6 +295,11 @@ async function handleSearch(e, block, config) {
   addTagsFilter(block, data, selectedTag);
   if (selectedTag) {
     data = data.filter((result) => result.tags?.split(',').includes(selectedTag));
+  }
+  
+  const selectedProduct = searchParams.get('product');
+  if (selectedProduct) {
+    await openProductModal();
   }
   if (searchValue.length < 3) {
     renderResults(block, config, data, searchTerms);
