@@ -1,3 +1,5 @@
+import { decorateIcons } from "../../scripts/aem.js";
+
 const searchParams = new URLSearchParams(window.location.search);
 
 const DEFAULT_IMAGE = 'https://main--aip--gargadobe.hlx.page/media_16217f65af2aa2100714b80ea9cd45d2492cdd9f7.png?width=2000&format=webply&optimize=medium';
@@ -17,9 +19,9 @@ async function fetchProductDetails(sourceUrl) {
 
 function createImage(src, alt) {
   const img = document.createElement('img');
+  img.classList.add('product-image');
   img.src = src;
   img.alt = alt;
-  img.style.borderRadius = '50%'; // make the image round
   return img;
 }
 
@@ -31,7 +33,8 @@ function createTitle(text) {
 
 function createDescription(text) {
   const description = document.createElement('p');
-  description.textContent = text;
+  description.classList.add('product-description');
+  description.innerHTML = text;
   return description;
 }
 
@@ -56,6 +59,12 @@ function createTags(tagStr) {
   return tags;
 }
 
+function icon( name) {
+  const icon = document.createElement('span');
+  icon.classList.add('icon', `icon-${name}`);
+  return icon;
+}
+
 export default async function decorate(block) {
   const source = block.querySelector('a[href]') ? block.querySelector('a[href]').href : '/query-index.json';
   block.innerHTML = '';
@@ -73,27 +82,28 @@ export default async function decorate(block) {
   const productDetails = document.createElement('div');
   productDetails.classList.add('product-details');
 
-  // create and append elements using helper functions
+  const productHeader = document.createElement('div');
+  productHeader.classList.add('product-header');
   const productImage = createImage(product.image || DEFAULT_IMAGE, product.name);
-  productDetails.appendChild(productImage);
-
   const productTitle = createTitle(product.name);
-  productDetails.appendChild(productTitle);
+  productHeader.appendChild(productImage);
+  productHeader.appendChild(productTitle);
+  productDetails.appendChild(productHeader);
 
   const productDescription = createDescription(product.description);
   productDetails.appendChild(productDescription);
 
-  const slackLink = createLink(product.slack, 'Slack');
-  productDetails.appendChild(slackLink);
+  const productDetailsFooter = document.createElement('div');
 
-  const wikiLink = createLink(product.wiki, 'Wiki');
-  productDetails.appendChild(wikiLink);
+  const referenceContainer = document.createElement('div');
+  referenceContainer.classList.add('references-container');
+  referenceContainer.appendChild(icon('slack'));
+  referenceContainer.appendChild(icon('confluence'));
+  referenceContainer.appendChild(icon('github'));
+  productDetailsFooter.appendChild(referenceContainer);
 
-  const jiraLink = createLink(product.jira, 'Jira');
-  productDetails.appendChild(jiraLink);
-
-  const tags = createTags(product.tags);
-  productDetails.appendChild(tags);
+  decorateIcons(productDetailsFooter);
+  productDetails.appendChild(productDetailsFooter);
 
   block.replaceWith(productDetails);
 }

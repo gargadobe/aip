@@ -18,3 +18,36 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+
+.product-details .product-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.product-details .product-image {
+  border-radius: 50%;
+  width: 50%;
+}
+
+.product-details .product-description {
+  padding: 20px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  height: 200px;
+  overflow-y: auto;
+}
+
+.references-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.references-container span.icon {
+    height: auto;
+    width: 30px;
+    cursor: pointer;
+}

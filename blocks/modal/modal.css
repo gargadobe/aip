@@ -11,10 +11,11 @@ body.modal-open {
   overflow-y: hidden;
   position: relative;
   width: calc(100vw - 48px);
-  max-width: 900px;
-  max-height: calc(100dvh - (2 * var(--header-height)));
+  max-width: 600px;
+  max-height: calc(100dvh - (3 * var(--header-height)));
   padding: 0;
   border: 1px solid var(--dark-color);
+  border-radius: 12px;
 }
 
 .modal dialog .modal-content {
