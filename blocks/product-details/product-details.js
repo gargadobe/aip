@@ -1,6 +1,5 @@
 import { decorateIcons } from "../../scripts/aem.js";
 
-const searchParams = new URLSearchParams(window.location.search);
 
 const DEFAULT_IMAGE = 'https://main--aip--gargadobe.hlx.page/media_16217f65af2aa2100714b80ea9cd45d2492cdd9f7.png?width=2000&format=webply&optimize=medium';
 
@@ -70,6 +69,7 @@ export default async function decorate(block) {
   block.innerHTML = '';
   const productsData = await fetchProductDetails(source);
 
+  const searchParams = new URLSearchParams(window.location.search);
   // get the selected product from searchparams
   const selectedProduct = searchParams.get('product');
   const product = await productsData.find((product) => product.name === selectedProduct);
