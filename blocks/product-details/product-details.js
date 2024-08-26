@@ -102,9 +102,9 @@ export default async function decorate(block) {
 
   const referenceContainer = document.createElement('div');
   referenceContainer.classList.add('references-container');
-  referenceContainer.appendChild(icon('slack'), product.slack_url);
-  referenceContainer.appendChild(icon('confluence'), product.wiki_url);
-  referenceContainer.appendChild(icon('github'), product.git_url);
+  referenceContainer.appendChild(icon('slack', product.slack_url));
+  referenceContainer.appendChild(icon('confluence', product.wiki_url));
+  referenceContainer.appendChild(icon('github', product.git_url));
   productDetailsFooter.appendChild(referenceContainer);
 
   decorateIcons(productDetailsFooter);
