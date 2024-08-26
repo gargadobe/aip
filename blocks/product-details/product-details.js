@@ -62,7 +62,7 @@ function icon(name, refernceLink) {
   const icon = document.createElement('span');
   icon.classList.add('icon', `icon-${name}`);
   if (refernceLink) {
-    span.addEventListener('click', () => {
+    icon.addEventListener('click', () => {
       window.open(refernceLink, '_blank');
     });
   }
