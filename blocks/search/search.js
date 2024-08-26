@@ -130,7 +130,7 @@ function renderResult(result, searchTerms, titleTag) {
   }
   if (result.description) {
     const description = document.createElement('p');
-    description.textContent = result.description;
+    description.innerHTML = result.description;
     description.classList.add('truncate');
     highlightTextElements(searchTerms, [description]);
     a.append(description);
