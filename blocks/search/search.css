@@ -1,4 +1,10 @@
 /* search box */
+.search {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .search .search-box {
   display: grid;
   grid-template-columns: auto 1fr;
