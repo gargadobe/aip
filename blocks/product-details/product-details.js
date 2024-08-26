@@ -58,9 +58,14 @@ function createTags(tagStr) {
   return tags;
 }
 
-function icon( name) {
+function icon(name, refernceLink) {
   const icon = document.createElement('span');
   icon.classList.add('icon', `icon-${name}`);
+  if (refernceLink) {
+    span.addEventListener('click', () => {
+      window.open(refernceLink, '_blank');
+    });
+  }
   return icon;
 }
 
@@ -97,9 +102,9 @@ export default async function decorate(block) {
 
   const referenceContainer = document.createElement('div');
   referenceContainer.classList.add('references-container');
-  referenceContainer.appendChild(icon('slack'));
-  referenceContainer.appendChild(icon('confluence'));
-  referenceContainer.appendChild(icon('github'));
+  referenceContainer.appendChild(icon('slack'), product.slack_url);
+  referenceContainer.appendChild(icon('confluence'), product.wiki_url);
+  referenceContainer.appendChild(icon('github'), product.git_url);
   productDetailsFooter.appendChild(referenceContainer);
 
   decorateIcons(productDetailsFooter);
