@@ -83,7 +83,7 @@ export async function fetchData(source) {
   return json.data;
 }
 
- async function openProductModal() {
+async function openProductModal() {
   const { openModal } = await import(`${window.hlx.codeBasePath}/blocks/modal/modal.js`);
   await openModal("/product-details");
   let dialogElement = document.querySelector('dialog');
@@ -134,6 +134,12 @@ function renderResult(result, searchTerms, titleTag) {
     description.classList.add('truncate');
     highlightTextElements(searchTerms, [description]);
     a.append(description);
+    const anchorElements = description.querySelectorAll('a');
+    anchorElements.forEach((element) => {
+      element.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent the card click event
+      });
+    });
   }
 
   if (result.tags) {
@@ -296,7 +302,7 @@ async function handleSearch(e, block, config) {
   if (selectedTag) {
     data = data.filter((result) => result.tags?.split(',').includes(selectedTag));
   }
-  
+
   const selectedProduct = searchParams.get('product');
   if (selectedProduct) {
     await openProductModal();
