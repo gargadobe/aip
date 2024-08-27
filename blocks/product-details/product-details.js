@@ -97,6 +97,9 @@ export default async function decorate(block) {
 
   const productDescription = createDescription(product.description);
   productDetails.appendChild(productDescription);
+  productDetails.querySelectorAll('a').forEach(function(anchor) {
+    anchor.setAttribute('target', '_blank');
+});
 
   const productDetailsFooter = document.createElement('div');
 

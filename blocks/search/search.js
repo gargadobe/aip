@@ -136,6 +136,7 @@ function renderResult(result, searchTerms, titleTag) {
     a.append(description);
     const anchorElements = description.querySelectorAll('a');
     anchorElements.forEach((element) => {
+      element.setAttribute('target', '_blank');
       element.addEventListener('click', (event) => {
         event.stopPropagation(); // Prevent the card click event
       });
