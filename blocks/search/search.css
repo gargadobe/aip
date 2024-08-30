@@ -147,7 +147,7 @@
 .truncate {
   display: -webkit-box;
   -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;  
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -156,7 +156,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  margin-top: 10px;
+  margin-top: auto;
 }
 
 .search-filters {
@@ -165,6 +165,7 @@
   gap: 5px;
   margin-top: 20px;
   margin-bottom: 20px;
+  flex-direction: column;
 }
 
 .tag {
@@ -188,4 +189,162 @@
 .tag.selected {
   background-color: #333;
   color: #fff;
+}
+
+
+
+
+
+
+/* Progress Status Bar Filter */
+.progress-bar {
+  display: table-cell;
+  vertical-align: middle;
+  margin-top: 20px;
+  color: black;
+}
+
+.progress-bar .clearfix:after {
+  clear: both;
+  content: "";
+  display: block;
+  height: 0;
+}
+
+.progress-bar .nav {
+  margin-top: 40px;
+}
+
+.progress-bar .pull-right {
+  float: right;
+}
+
+.progress-bar a,
+.progress-bar a:current {
+  color: #333;
+  text-decoration: none;
+}
+
+.progress-bar a:hover {
+  color: #999;
+}
+
+/* Progress Bar CSS */
+.progress-bar .arrow-steps {
+  display: flex;
+}
+
+.progress-bar .arrow-steps .step {
+  font-size: 14px;
+  text-align: center;
+  color: #666;
+  cursor: default;
+  margin: 0 3px;
+  padding: 10px 10px 10px 30px;
+  min-width: 180px;
+  float: left;
+  position: relative;
+  background-color: #d9e3f7;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.progress-bar .arrow-steps .step:after,
+.progress-bar .arrow-steps .step:before {
+  content: " ";
+  position: absolute;
+  top: 0;
+  width: 0;
+  height: 0;
+  border-top: 19px solid transparent;
+  border-bottom: 17px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.progress-bar .arrow-steps .step:after {
+  right: -17px;
+  border-left: 17px solid #d9e3f7;
+  z-index: 2;
+}
+
+.progress-bar .arrow-steps .step:before {
+  left: 0;
+  border-left: 17px solid #fff;
+  z-index: 0;
+}
+
+.progress-bar .arrow-steps .step:first-child:before {
+  border: none;
+}
+
+.progress-bar .arrow-steps .step:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.progress-bar .arrow-steps .step span {
+  position: relative;
+}
+
+.progress-bar .arrow-steps .step span:before {
+  opacity: 0;
+  content: "✔";
+  position: absolute;
+  top: -2px;
+  left: -20px;
+}
+
+.progress-bar .arrow-steps .step.done span:before {
+  opacity: 1;
+  transition: opacity 0.3s ease 0.5s;
+}
+
+.progress-bar .arrow-steps .step.current {
+  color: #fff;
+  background-color: #23468c;
+}
+
+.progress-bar .arrow-steps .step.current:after {
+  border-left: 17px solid #23468c;
+}
+
+.progress-bar .arrow-steps .step.current {
+  color: #fff;
+  background-color: #23468c;
+}
+
+.progress-bar .arrow-steps .step.current:after {
+  border-left: 17px solid #23468c;
+}
+
+.progress-bar .arrow-steps .step.current[data-step="experimental"] {
+  background-color: rgb(143, 143, 133);
+}
+
+.progress-bar .arrow-steps .step.current[data-step="experimental"]:after {
+  border-left: 17px solid rgb(143, 143, 133);
+}
+
+.progress-bar .arrow-steps .step.current[data-step="proposed"] {
+  background-color: rgb(174, 155, 119);
+}
+
+.progress-bar .arrow-steps .step.current[data-step="proposed"]:after {
+  border-left: 17px solid rgb(174, 155, 119);
+}
+
+.progress-bar .arrow-steps .step.current[data-step="limited"] {
+  background-color: rgb(128, 148, 95);
+}
+
+.progress-bar .arrow-steps .step.current[data-step="limited"]:after {
+  border-left: 17px solid rgb(128, 148, 95);
+}
+
+.progress-bar .arrow-steps .step.current[data-step="ga"] {
+  background-color: green;
+}
+
+.progress-bar .arrow-steps .step.current[data-step="ga"]:after {
+  border-left: 17px solid green;
 }

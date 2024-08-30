@@ -284,6 +284,59 @@ function addTagsFilter(block, data, selectedTag) {
   searchFilters.append(tagsContainer);
 }
 
+
+function addProgressBar(block, data, selectedStep) {
+  const searchResults = block.querySelector('.search-filters');
+  const progressBar = document.createElement('div');
+  progressBar.className = 'progress-bar';
+  progressBar.style.width = '100%';
+  progressBar.innerHTML = `
+    <div class="arrow-steps clearfix">
+      <div class="step" data-step="experimental"> <span> Experimental </span> </div>
+      <div class="step" data-step="proposed"> <span>Proposed</span> </div>
+      <div class="step" data-step="limited"> <span> Limited </span> </div>
+      <div class="step" data-step="ga"> <span>GA</span> </div>
+    </div>
+  `;
+    
+  if (selectedStep) {
+    const currentStep = progressBar.querySelector(`.step[data-step="${selectedStep}"]`);
+    if (currentStep) {
+      currentStep.classList.add('current');
+    }
+  }
+  
+  searchResults.append(progressBar);
+
+  const steps = progressBar.querySelectorAll('.step');
+
+  steps.forEach(step => {
+    step.addEventListener('click', function() {
+      var currentStep = ''
+      steps.forEach(element => {
+        if (element.classList.contains('current')) {
+          currentStep = element
+        }
+      });
+      
+      if (currentStep && currentStep.dataset.step === this.dataset.step) {
+        currentStep.classList.remove('current');
+        searchParams.delete('step');
+      } else {
+        steps.forEach(s => s.classList.remove('current'));
+        this.classList.add('current');
+        const stepValue = this.getAttribute('data-step');
+        searchParams.set('step', stepValue);
+      }
+      const url = new URL(window.location.href);
+      url.search = searchParams.toString();
+      window.history.replaceState({}, '', url.toString());
+      const input = document.querySelector('input');
+      input.dispatchEvent(new Event('input'));
+    });
+  });
+}
+
 async function handleSearch(e, block, config) {
   const searchValue = e.target.value;
   if (searchValue.length < 3) {
@@ -297,12 +350,19 @@ async function handleSearch(e, block, config) {
     window.history.replaceState({}, '', url.toString());
   }
   const selectedTag = searchParams.get('tag') || '';
+  const selectedStep = searchParams.get('step') || '';
   const searchTerms = searchValue.toLowerCase().split(/\s+/).filter((term) => !!term);
   let data = await fetchData(config.source);
   addTagsFilter(block, data, selectedTag);
+  addProgressBar(block, data, selectedStep);
   if (selectedTag) {
-    data = data.filter((result) => result.tags?.split(',').includes(selectedTag));
+    data = data.filter((result) => result.tags?.split(',').includes(selectedTag?.toLowerCase()));
+  } 
+
+  if (selectedStep) {
+    data = data.filter((result) => result.status?.toLowerCase() === selectedStep?.toLocaleLowerCase());
   }
+
 
   const selectedProduct = searchParams.get('product');
   if (selectedProduct) {
