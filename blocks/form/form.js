@@ -30,17 +30,26 @@ async function createForm(formHref, submitHref) {
 function generatePayload(form) {
   const payload = {};
 
-  [...form.elements].forEach((field) => {
-    if (field.name && field.type !== 'submit' && !field.disabled) {
-      if (field.type === 'radio') {
-        if (field.checked) payload[field.name] = field.value;
-      } else if (field.type === 'checkbox') {
-        if (field.checked) payload[field.name] = payload[field.name] ? `${payload[field.name]},${field.value}` : field.value;
-      } else {
-        payload[field.name] = field.value;
+  const fields = form.querySelectorAll('.field-wrapper');
+
+  fields.forEach((fieldWrapper) => {
+
+    if (fieldWrapper.classList.contains('rich-text-wrapper')) {
+      payload['description'] = fieldWrapper.querySelector('.ql-editor').innerHTML;
+    } else {
+      const field = fieldWrapper.querySelector('input, select, textarea');
+      if (field && field.name && field.type !== 'submit' && !field.disabled) {
+        if (field.type === 'radio') {
+          if (field.checked) payload[field.name] = field.value;
+        } else if (field.type === 'checkbox') {
+          if (field.checked) payload[field.name] = payload[field.name] ? `${payload[field.name]},${field.value}` : field.value;
+        } else {
+          payload[field.name] = field.value;
+        }
       }
     }
   });
+
   return payload;
 }
 

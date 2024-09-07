@@ -213,6 +213,54 @@ const createRadio = (fd) => {
   return { field, fieldWrapper };
 };
 
+const createRichText = async (fd) => {
+  // Create a container for the Quill editor
+
+  const field = document.createElement('div');
+  field.classList.add('quill-editor');
+  field.id = fd.Id;
+
+  const label = createLabel(fd);
+  field.setAttribute('aria-labelledby', label.id);
+
+  var toolbarOptions = [
+    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+    ['blockquote', 'code-block'],
+  
+    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+    [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+    [{ 'direction': 'rtl' }],                         // text direction
+  
+    [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+  
+    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+    [{ 'font': [] }],
+    [{ 'align': [] }],
+  
+    ['clean']                                         // remove formatting button
+  ];
+
+  var options = {
+    modules: {
+      toolbar: toolbarOptions,
+    },
+    theme: 'snow'
+  };  
+  
+  
+  const fieldWrapper = createFieldWrapper(fd);
+  fieldWrapper.append(label);
+  fieldWrapper.append(field);
+
+  var quill = new Quill(field, options);
+
+  return { field, fieldWrapper };
+};
+
+
 const FIELD_CREATOR_FUNCTIONS = {
   select: createSelect,
   heading: createHeading,
@@ -224,6 +272,7 @@ const FIELD_CREATOR_FUNCTIONS = {
   fieldset: createFieldset,
   checkbox: createCheckbox,
   radio: createRadio,
+  'rich-text': createRichText,
 };
 
 export default async function createField(fd, form) {

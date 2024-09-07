@@ -168,3 +168,8 @@
 .form .toggle-wrapper input:checked + .slider::before {
   transform: translateX(24px);
 }
+
+
+.form .quill-editor {
+  height: 200px;
+}
