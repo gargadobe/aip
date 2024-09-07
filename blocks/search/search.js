@@ -356,7 +356,7 @@ async function handleSearch(e, block, config) {
   addTagsFilter(block, data, selectedTag);
   addProgressBar(block, data, selectedStep);
   if (selectedTag) {
-    data = data.filter((result) => result.tags?.split(',').includes(selectedTag?.toLowerCase()));
+    data = data.filter((result) => result.tags?.split(',').includes(selectedTag?.toUpperCase()));
   } 
 
   if (selectedStep) {
